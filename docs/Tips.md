@@ -1,4 +1,5 @@
-English | [简体中文](./Tips.zh-CN.md) | [Tiếng Việt](./Tips.vi-VN.md)
+**v0.10.7** | English | [简体中文](./Tips.zh-CN.md) | [Tiếng Việt](./Tips.vi-VN.md)
+
 
 # Tips
 
@@ -14,7 +15,6 @@ Double-click the game icon in the title bar.
 
 Most of the files are the same between clients on different servers for each game, with only a few differences. This feature is convenient for users to quickly convert the client to the another game server.
 
-> Honkai: Star Rail is not supported.
 
 ### Steps to use
 

@@ -3,9 +3,9 @@ name: Build
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev/*" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev/*" ]
 
 
 jobs:
@@ -23,21 +23,31 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Install .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 7.0.x
+        dotnet-version: 9.0.x
+        global-json-file: global.json
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@v2
 
-    - name: Restore
-      run: dotnet restore Starward
+    - name: SHA
+      id: sha
+      run: echo "sha=$("${{ github.sha }}".SubString(0, 7))" >> $env:GITHUB_OUTPUT
 
     - name: Build
       run: |
-        msbuild Starward.Launcher "-property:Configuration=$env:Configuration;Platform=$env:Platform"
-        dotnet build Starward -c $env:Configuration -p:Platform=$env:Platform
+        $sha = "${{ steps.sha.outputs.sha }}"
+        New-Item -Path "build/Starward/" -Type Directory
+        msbuild src/Starward.Launcher "-property:Configuration=$env:Configuration;Platform=$env:Platform;OutDir=$(Resolve-Path "build/Starward/")"
+        dotnet publish src/Starward -c $env:Configuration -r "win-$env:Platform" -o "build/Starward/app-build.$sha" -p:Platform=$env:Platform -p:Version="0.0.1-build.$sha" -p:DefineConstants=CI -p:PublishTrimmed=true -p:TrimMode=partial
+        Add-Content "build/Starward/version.ini" -Value "app_folder=app-build.$sha`r`nexe_name=Starward.exe"
 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Starward_${{ matrix.configuration }}_${{ matrix.platform }}_${{ steps.sha.outputs.sha }}
+        path: build/Starward/

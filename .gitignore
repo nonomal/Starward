@@ -217,6 +217,7 @@ ecf/
 rcf/
 
 # Windows Store app package directories and files
+Assets/
 AppPackages/
 BundleArtifacts/
 Package.StoreAssociation.xml
@@ -398,3 +399,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea/
